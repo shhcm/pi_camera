@@ -1,4 +1,5 @@
 import time
+import traceback 
 from picamera import PiCamera
 from time import sleep
 from io import BytesIO
@@ -6,27 +7,36 @@ from ftplib import FTP
 from datetime import datetime
 from threading import Thread
 
+ftp_base_dir="/ASMT-2115-01/camera_0/"
+
 def camera_worker():
   camera = PiCamera()
   while True:
     f = BytesIO()
     camera.start_preview()
-    sleep(4)
+    sleep(2)
     camera.capture(f, 'jpeg')
     f.seek(0) # Go back to pos 0 of buffer. 
-    timestamp = datetime.fromtimestamp(time.time()).strftime('%y%m%d_%H%M%S')
+    timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d_%H%M%S')
+    working_dir = datetime.fromtimestamp(time.time()).strftime('%Y%m%d')
     
     try: 
-       ftp = FTP("FTP_HOST", "FTP_USER", "FTP_PASSWORD")
-       ftp.storbinary("STOR /PATH/TO/IMAGES/" + timestamp + ".jpg", f)
-       ftp.close()
+       ftp = FTP("FRITZ.NAS", "ftpuser", "MFtpUserAnm?")
+       ftp.mkd(ftp_base_dir + working_dir)
     except:
-       print("FTP failed:\nType: " + sys.exc_info()[0]
-             + "\nValue: " + sys.exc_info()[1]
-             + "\nTraceback " + sys.exc_info()[2])
+       traceback.print_exc()
+    finally:
+       ftp.close()
+
+    try:
+       ftp = FTP("FRITZ.NAS", "ftpuser", "MFtpUserAnm?")
+       ftp.storbinary("STOR " + ftp_base_dir + working_dir + "/" + timestamp + ".jpg", f)
+    except:
+       traceback.print_exc()
     finally:
        f.close()
        camera.stop_preview()
+       ftp.close()
 
 thread = Thread(name="Camera Thread", target=camera_worker)
 thread.start()

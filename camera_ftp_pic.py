@@ -21,7 +21,7 @@ def camera_worker():
     working_dir = datetime.fromtimestamp(time.time()).strftime('%Y%m%d')
     
     try: 
-       ftp = FTP("FRITZ.NAS", "ftpuser", "MFtpUserAnm?")
+       ftp = FTP("FRITZ.NAS", "", "")
        ftp.mkd(ftp_base_dir + working_dir)
     except:
        traceback.print_exc()
@@ -29,7 +29,7 @@ def camera_worker():
        ftp.close()
 
     try:
-       ftp = FTP("FRITZ.NAS", "ftpuser", "MFtpUserAnm?")
+       ftp = FTP("FRITZ.NAS", "", "")
        ftp.storbinary("STOR " + ftp_base_dir + working_dir + "/" + timestamp + ".jpg", f)
     except:
        traceback.print_exc()

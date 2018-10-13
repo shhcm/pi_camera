@@ -22,7 +22,7 @@ def camera_worker():
     working_dir = datetime.fromtimestamp(time.time()).strftime('%Y%m%d')
     
     try:
-       ftp = FTP("FRITZ.NAS", "USER", "PASS")
+       ftp = FTP("SERVER.NAME", "USER", "PASS")
        try: 
           ftp.cwd(ftp_base_dir + working_dir)
        except:

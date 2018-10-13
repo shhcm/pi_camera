@@ -1,4 +1,5 @@
-import time
+
+rt time
 import traceback 
 from picamera import PiCamera
 from time import sleep
@@ -14,30 +15,36 @@ def camera_worker():
   while True:
     f = BytesIO()
     camera.start_preview()
-    sleep(2)
+    sleep(1)
     camera.capture(f, 'jpeg')
     f.seek(0) # Go back to pos 0 of buffer. 
     timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d_%H%M%S')
     working_dir = datetime.fromtimestamp(time.time()).strftime('%Y%m%d')
     
-    try: 
-       ftp = FTP("FRITZ.NAS", "", "")
-       ftp.mkd(ftp_base_dir + working_dir)
-    except:
-       traceback.print_exc()
-    finally:
-       ftp.close()
-
     try:
-       ftp = FTP("FRITZ.NAS", "", "")
-       ftp.storbinary("STOR " + ftp_base_dir + working_dir + "/" + timestamp + ".jpg", f)
+       ftp = FTP("FRITZ.NAS", "USER", "PASS")
+       try: 
+          ftp.cwd(ftp_base_dir + working_dir)
+       except:
+          """ Try to create directory. """
+          try:
+             ftp.mkd(ftp_base_dir + working_dir)
+          except:
+             """ Try again. """ 
+
+       sleep(1)
+
+       try:
+          ftp.storbinary("STOR " + ftp_base_dir + working_dir + "/" + timestamp + ".jpg", f)
+       except:
+          traceback.print_exc()
+       finally:
+          f.close()
+          camera.stop_preview()
     except:
-       traceback.print_exc()
+       """ Try again. """
     finally:
-       f.close()
-       camera.stop_preview()
        ftp.close()
 
 thread = Thread(name="Camera Thread", target=camera_worker)
 thread.start()
-

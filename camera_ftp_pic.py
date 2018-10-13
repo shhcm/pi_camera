@@ -1,5 +1,5 @@
 
-rt time
+import time
 import traceback 
 from picamera import PiCamera
 from time import sleep

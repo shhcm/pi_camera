@@ -7,18 +7,6 @@ ftp_base_dir="/ASMT-2115-01/camera_0/"
 max_dirs=7
 
 
-#host = ftputil.FTPHost("FRITZ.NAS", "ftpuser", "?NOfritzuserftp?")
-#mypath = '/ASMT-2115-01/camera_0/20181018'
-#host.chdir(mypath)
-#names = host.listdir(host.curdir)
-#for name in names:
-#  if host.path.isfile(name):
-#    host.remove(name)
-
-
-#print('Closing FTP connection')
-#host.close()
-
 try:
   ftp = FTP("HOST", "USER", "PASS")
   ftp_del = FTP("HOST", "USER", "PASS") # Instance ftp blocks during LIST operation.

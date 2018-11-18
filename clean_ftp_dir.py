@@ -1,7 +1,5 @@
 import traceback
-#import ftputil
 from ftplib import FTP
-# Try ftputil instead
 
 ftp_base_dir="/ASMT-2115-01/camera_0/"
 max_dirs=7
